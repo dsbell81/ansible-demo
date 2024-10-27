@@ -1,0 +1,14 @@
+---
+# defaults file for disa-stig-scan
+dss_mode: install
+
+dss_install_dir: "{{ ansible_user_dir }}/disa/"
+
+#hardcode for scc 5.10, benchmark rhel8 v2r1 for now
+dss_base_url: https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/
+dss_scanner_base_name: scc-5.10_rhel8_oracle-linux8_x86_64_bundle
+dss_gpgkey_base_name: RPM-GPG-KEY-scc-5
+dss_benchmark_base_name: U_RHEL_8_V2R1_STIG_SCAP_1-3_Benchmark
+
+
+dss_profile: MAC-1_Sensitive 

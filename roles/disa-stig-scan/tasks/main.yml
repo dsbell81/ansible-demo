@@ -1,0 +1,9 @@
+---
+# tasks file for disa-stig-scan
+- name: install mode
+  import_tasks: install.yml
+  when: dss_mode == "install"
+
+- name: scan mode
+  import_tasks: scan.yml
+  when: dss_mode == "scan"

@@ -1,0 +1,2 @@
+[webservers]
+web ansible_host=10.0.2.9 ansible_user=packer 

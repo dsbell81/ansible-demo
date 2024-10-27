@@ -1,0 +1,69 @@
+---
+# tasks file for disa-stig-scan
+
+- name: create install dir
+  ansible.builtin.file:
+    path: "{{ dss_install_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: get files
+  ansible.builtin.get_url:
+    url: "{{ dss_base_url }}{{ item }}.zip"
+    dest: "{{ dss_install_dir }}{{ item }}.zip"
+    mode: '0664'
+  loop:
+    - "{{ dss_scanner_base_name }}"
+    - "{{ dss_gpgkey_base_name }}"
+    - "{{ dss_benchmark_base_name }}" 
+
+- name: unzip files
+  ansible.builtin.unarchive:
+    src: "{{ dss_install_dir }}{{ item }}.zip"
+    dest: "{{ dss_install_dir }}"
+    remote_src: yes
+  loop:
+    - "{{ dss_scanner_base_name }}"
+    - "{{ dss_gpgkey_base_name }}"
+    - "{{ dss_benchmark_base_name }}"
+
+- name: install gpg key
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ dss_install_dir }}/{{ dss_gpgkey_base_name }}.10"
+  become: yes
+
+- name: find RPM file
+  ansible.builtin.find:
+    paths: "{{ dss_install_dir }}"
+    patterns: "*.rpm"
+    recurse: yes
+  register: rpm_result
+
+- name: install scanner
+  ansible.builtin.yum:
+    name: "{{ rpm_result.files[0].path }}"
+    state: present
+  become: yes
+
+- name: remove bundled SCAP content
+  ansible.builtin.command: /opt/scc/cscc --uninstallAll
+  become: yes
+
+- name: load downloaded SCAP content
+  ansible.builtin.copy:
+    src: "{{ dss_install_dir }}{{ dss_benchmark_base_name }}.xml"
+    dest: "/opt/scc/Resources/Content/SCAP12_Content/{{ dss_benchmark_base_name }}.xml"
+    remote_src: yes
+    owner: root
+    group: root
+  become: yes
+
+- name: enable downloaded SCAP content
+  ansible.builtin.command: /opt/scc/cscc --enableAll
+  become: yes
+
+- name: set scan profile
+  ansible.builtin.command: "/opt/scc/cscc --setProfileAll {{ dss_profile }}"
+  become: yes
+

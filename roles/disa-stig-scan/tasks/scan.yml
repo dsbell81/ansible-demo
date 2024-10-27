@@ -1,0 +1,4 @@
+---
+- name: scan system per configured options
+  ansible.builtin.command: /opt/scc/cscc
+  become: yes

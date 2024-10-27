@@ -1,0 +1,15 @@
+---
+- name: STIG Scan
+  hosts: webservers
+
+  tasks:
+
+  - name: install scanner 
+    import_role:
+      name: disa-stig-scan
+
+  - name: run scan
+    import_role:
+      name: disa-stig-scan
+    vars:
+      dss_mode: scan 
