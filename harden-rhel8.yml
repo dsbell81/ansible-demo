@@ -1,0 +1,10 @@
+---
+- name: Harden Webservers 
+  hosts: webservers
+  become: yes
+
+  tasks:
+
+  - name: apply rhel8 STIGS
+    import_role:
+      name: rhel8STIG 
